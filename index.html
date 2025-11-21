@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuningan Kita - Portal Lengkap Satu Halaman</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Menggunakan Font Inter default Tailwind */
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .hero-banner {
+            position: relative; /* Diperlukan untuk positioning overlay teks */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50vh;
+            overflow: hidden; /* Memastikan gambar tidak meluber */
+        }
+        .hero-banner img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Memastikan gambar menutupi area hero banner */
+            z-index: 1; /* Agar teks overlay di atas gambar */
+        }
+        .hero-banner .overlay-content {
+            position: relative;
+            z-index: 2; /* Agar teks di atas gambar */
+            padding: 2rem;
+            background-color: rgba(0, 0, 0, 0.4); /* Background semi-transparan untuk teks */
+            border-radius: 0.75rem;
+            max-width: 48rem; /* max-w-2xl */
+            text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-2xl */
+        }
+        /* Penyesuaian offset scroll untuk elemen sticky header */
+        .section-padding {
+            padding-top: 5rem;
+            padding-bottom: 5rem;
+            margin-top: -5rem; /* Mengimbangi padding top agar navigasi tepat */
+        }
+
+        /* Styling Navigasi Dinamis */
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            color: #4b5563; /* gray-600 */
+        }
+        .nav-link:hover {
+            background-color: #f0fdf4; /* emerald-50 hover effect */
+            color: #047857; /* emerald-700 */
+            transform: translateY(-1px);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        .nav-link svg {
+            margin-right: 0.5rem;
+        }
+
+        /* Styling untuk Carousel - DIBUAT HORIZONTAL SLIDING */
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.75rem;
+        }
+        .carousel-track {
+            display: flex; /* Menyusun semua gambar secara horizontal */
+            transition: transform 0.5s ease-in-out; /* Animasi geser */
+        }
+        .carousel-image {
+            width: 100%; /* Setiap gambar mengambil lebar penuh container */
+            height: 400px; /* Tinggi tetap untuk carousel */
+            object-fit: cover;
+            flex-shrink: 0; /* Penting: mencegah gambar mengecil */
+        }
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 1rem 0.5rem;
+            cursor: pointer;
+            z-index: 10;
+            transition: background 0.3s;
+        }
+        .carousel-button:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+        
+        /* Custom Alert/Message Box Styles */
+        .alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none; /* Default hidden */
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .alert-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+        }
+        .alert-overlay.show .alert-box {
+            transform: scale(1);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- HEADER & NAVIGATION (Sticky) -->
+    <header class="shadow-md sticky top-0 z-50 bg-white bg-opacity-95 backdrop-blur-sm">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <nav class="flex items-center justify-between py-3">
+                <!-- Logo/Judul Blog Group -->
+                <div class="flex items-center space-x-3">
+                    <img src="https://cdn.imgbin.com/9/15/19/imgbin-kuningan-district-health-office-bogor-regency-pengadilan-negeri-kuningan-kantor-pemerintahan-desa-cilaja-jawa-barat-btrBRm0mPcgYFV2KL0rZsFUsm.jpg" 
+                        alt="Logo Kuningan" 
+                        class="h-8 w-auto rounded-full object-cover"
+                        onerror="this.onerror=null;this.src='https://placehold.co/32x32/14b8a6/ffffff?text=L';"
+                    >
+                    <a href="#home" class="text-3xl font-extrabold text-teal-700 tracking-tight">
+                        Kuningan <span class="text-amber-500">Kita</span>
+                    </a>
+                </div>
+
+                <!-- Navigasi Desktop (Lebih Dinamis dan Interaktif) -->
+                <div class="hidden md:flex space-x-2 text-lg font-medium">
+                    <!-- Home -->
+                    <a href="#home" class="nav-link">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3"></path></svg>
+                        Home
+                    </a>
+                    
+                    <!-- LINK BARU: BERITA -->
+                    <a href="berita_kuningan.html" class="nav-link">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v10m-7-2h4m-4 2h4m-4-6h.01M16 18l-2-2m0 0l-2 2m2-2V6"></path></svg>
+                        Berita
+                    </a>
+                    
+                    <!-- Kategori -->
+                    <a href="#kategori" class="nav-link">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+                        Kategori
+                    </a>
+                    <!-- Tentang Kami -->
+                    <a href="#tentang" class="nav-link">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Tentang Kami
+                    </a>
+                    <!-- Kontak -->
+                    <a href="#kontak" class="nav-link">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        Kontak
+                    </a>
+                </div>
+
+                <!-- Tombol Menu Mobile (Placeholder) -->
+                <button class="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO / BANNER - KINI MENGGUNAKAN GAMBAR MURNI -->
+    <div class="hero-banner rounded-b-xl shadow-inner mb-12">
+        <img src="https://i0.wp.com/kuninganmass.com/wp-content/uploads/2022/01/IMG_20220129_135910.jpg?fit=1152%2C864&ssl=1" 
+            alt="Jelajahi Pesona Kuningan, Gerbang Timur Jawa Barat" 
+            onerror="this.onerror=null;this.src='https://placehold.co/1200x500/065f46/ffffff?text=GAMBAR+PESONA+KUNINGAN+TIDAK+DAPAT+DIMUAT';"
+        >
+        <!-- Teks yang diminta dihapus/dijadikan foto telah dihapus -->
+    </div>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        
+        <!-- CAROUSEL SECTION: Gambar Geser-Geser -->
+        <section class="my-16 flex justify-center items-center">
+            <div class="w-full max-w-4xl bg-white p-6 rounded-xl shadow-xl border-t-4 border-teal-500 text-center">
+                <h2 class="text-3xl font-bold text-teal-700 mb-4">Selamat Datang di Kabupaten Kuningan!</h2>
+                <p class="text-gray-600 mb-6">Sebuah sambutan hangat dari gerbang kota kami yang penuh pesona.</p>
+                
+                <!-- CAROUSEL CONTAINER -->
+                <div id="imageCarousel" class="carousel-container shadow-2xl">
+                    <!-- Images Track (New Wrapper for horizontal sliding) -->
+                    <div id="carouselTrack" class="carousel-track">
+                        <!-- Images will be injected by JavaScript -->
+                    </div>
+                    <!-- Navigation Buttons -->
+                    <button class="carousel-button left-0 p-4 rounded-r-lg" onclick="changeSlide(-1)">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button class="carousel-button right-0 p-4 rounded-l-lg" onclick="changeSlide(1)">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+                
+                <p id="imageCaption" class="text-sm text-gray-500 mt-4 italic">Memuat gambar...</p>
+            </div>
+        </section>
+
+        <!-- -------------------------------------------------- -->
+        <!-- 1. HOME: FEATURED POSTS & LATEST POSTS (INDEX CONTENT) -->
+        <!-- -------------------------------------------------- -->
+        <section id="home" class="section-padding">
+            <h2 class="text-4xl font-extrabold text-center mb-10 text-teal-700">Beranda Kuningan Kita</h2>
+
+            <!-- 1.1 FEATURED POSTS (SOROTAN) -->
+            <div id="sorotan" class="mb-16">
+                <h3 class="text-3xl font-bold text-center mb-8 text-teal-700 border-b-4 border-amber-400 inline-block pb-2 mx-auto">
+                    ⭐ Sorotan Pilihan
+                </h3>
+                <div class="grid md:grid-cols-3 gap-8">
+                    
+                    <!-- Card 1: WISATA & REKREASI - DENGAN GAMBAR BARU -->
+                    <div class="bg-white rounded-xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition duration-300 group">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRE1vDXXZxpPDJIYD61zfEMAHjVM0et7Z_FmI_ALlIBgAH5-8UVGvuKG4kHdyZiTEXoF-s&usqp=CAU" alt="Telaga Remis Kuningan" class="w-full h-48 object-cover transition duration-300 group-hover:opacity-85"
+                            onerror="this.onerror=null;this.src='https://placehold.co/800x500/0d9488/ffffff?text=Telaga+Remis';">
+                        <div class="p-5">
+                            <span class="text-sm font-semibold text-teal-600 bg-teal-100 px-3 py-1 rounded-full">🏞️ Wisata Alam</span>
+                            <h4 class="text-xl font-bold mt-2 mb-2 text-gray-900">Telaga Remis: Keajaiban Danau di Kaki Ciremai</h4>
+                            <p class="text-gray-600 text-sm line-clamp-2">Pesona air jernih dan pepohonan rindang, tempat sempurna untuk melepas penat bersama keluarga.</p>
+                            <a href="#" class="mt-3 inline-block text-amber-600 font-semibold hover:text-amber-700 transition">Baca Selengkapnya →</a>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: KULINER & MAKANAN LOKAL - DENGAN GAMBAR BARU -->
+                    <div class="bg-white rounded-xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition duration-300 group">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS8l1IDrfzvMlF7skAUiEc6455MuMGV622Dw&s" alt="Nasi Kasreng Kuningan" class="w-full h-48 object-cover transition duration-300 group-hover:opacity-85"
+                            onerror="this.onerror=null;this.src='https://placehold.co/800x500/f59e0b/ffffff?text=Nasi+Kasreng';">
+                        <div class="p-5">
+                            <span class="text-sm font-semibold text-amber-600 bg-amber-100 px-3 py-1 rounded-full">🍽️ Kuliner Khas</span>
+                            <h4 class="text-xl font-bold mt-2 mb-2 text-gray-900">Nasi Kasreng: Sederhana, Gurih, dan Bikin Nagih!</h4>
+                            <p class="text-gray-600 text-sm line-clamp-2">Mencicipi nasi legendaris dengan lauk sederhana namun bumbu yang kaya rasa. Wajib coba!</p>
+                            <a href="#" class="mt-3 inline-block text-amber-600 font-semibold hover:text-amber-700 transition">Baca Selengkapnya →</a>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: ACARA & FESTIVAL - DENGAN GAMBAR & TEKS BARU -->
+                    <div class="bg-white rounded-xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition duration-300 group">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQM61H26RGNBFrtkclTYWYGVnriebxpGhZTiA&s" alt="Festival Kuningan" class="w-full h-48 object-cover transition duration-300 group-hover:opacity-85"
+                            onerror="this.onerror=null;this.src='https://placehold.co/800x500/374151/ffffff?text=Festival+Kuningan';">
+                        <div class="p-5">
+                            <span class="text-sm font-semibold text-gray-600 bg-gray-200 px-3 py-1 rounded-full">🗓️ Acara Lokal</span>
+                            <h4 class="text-xl font-bold mt-2 mb-2 text-gray-900">Liputan Lengkap: Kemeriahan Festival Kuningan</h4>
+                            <p class="text-gray-600 text-sm line-clamp-2">Sorotan dari panggung utama Festival Kuningan, pameran UMKM, hingga kegiatan konservasi alam yang inspiratif.</p>
+                            <a href="#" class="mt-3 inline-block text-amber-600 font-semibold hover:text-amber-700 transition">Baca Selengkapnya →</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 1.2 LATEST POSTS (TERBARU) -->
+            <div class="mb-16">
+                <h3 class="text-3xl font-bold text-center mb-8 text-teal-700 border-b-4 border-amber-400 inline-block pb-2 mx-auto">
+                    🗞️ Artikel Terbaru Kami
+                </h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <!-- Artikel 1: Sejarah -->
+                    <article class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col hover:shadow-xl transition duration-300">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXafqpDf0U0trQjoYJSe6xvhv-9OMN3iD6AQ&s" alt="Gedung Linggarjati" class="h-48 w-full object-cover"
+                            onerror="this.onerror=null;this.src='https://placehold.co/600x400/10b981/ffffff?text=Linggarjati';">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <span class="text-xs font-semibold text-red-600 mb-2">🤝 Sejarah Lokal</span>
+                            <h4 class="text-xl font-bold mb-3">Mengenang Perjuangan di Gedung Perundingan Linggarjati</h4>
+                            <p class="text-gray-600 text-sm flex-grow">Mengunjungi saksi bisu sejarah kemerdekaan Indonesia. Destinasi wajib bagi pecinta sejarah.</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 text-sm flex justify-between">
+                                <span class="text-gray-500">20 Nov 2025</span>
+                                <a href="#" class="text-teal-600 hover:text-teal-700 font-medium">Baca</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Artikel 2: Kuliner -->
+                    <article class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col hover:shadow-xl transition duration-300">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTOZsAdE9IBnuwPZKNCC996AxoEZ-dyopvpQ&s" alt="Hucap Kuningan" class="h-48 w-full object-cover"
+                            onerror="this.onerror=null;this.src='https://placehold.co/600x400/f97316/ffffff?text=Hucap+Kuningan';">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <span class="text-xs font-semibold text-amber-600 mb-2">🍽️ Kuliner Khas</span>
+                            <h4 class="text-xl font-bold mb-3">Hucap: Siapa Bilang Kuningan Tak Punya Saingan Ketoprak?</h4>
+                            <p class="text-gray-600 text-sm flex-grow">Perpaduan tahu dan kecap khas Kuningan dengan bumbu rahasia yang pedas manis gurih.</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 text-sm flex justify-between">
+                                <span class="text-gray-500">18 Nov 2025</span>
+                                <a href="#" class="text-teal-600 hover:text-teal-700 font-medium">Baca</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Artikel 3: Berita Lokal - DENGAN GAMBAR & TEKS BARU -->
+                    <article class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col hover:shadow-xl transition duration-300">
+                        <img src="https://blue.kumparan.com/image/upload/fl_progressive,fl_lossy,c_fill,f_auto,q_auto:best,w_640/v1634025439/046125c504b7472d89b06a3b3f49fdd2d25a7570d14ed44b86de5cf9aeb8c494.jpg" alt="Taman Kota Kuningan" class="h-48 w-full object-cover"
+                            onerror="this.onerror=null;this.src='https://placehold.co/600x400/1e40af/ffffff?text=Proyek+Baru';">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <span class="text-xs font-semibold text-blue-600 mb-2">📰 Pembangunan Kota</span>
+                            <h4 class="text-xl font-bold mb-3">Pemerintah Meresmikan Taman Kota Kuningan Terbaru</h4>
+                            <p class="text-gray-600 text-sm flex-grow">Wajah baru ruang terbuka hijau, Taman Kota Kuningan, kini menjadi pusat rekreasi dan interaksi warga yang modern dan nyaman.</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 text-sm flex justify-between">
+                                <span class="text-gray-500">15 Nov 2025</span>
+                                <a href="#" class="text-teal-600 hover:text-teal-700 font-medium">Baca</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Artikel 4: Wisata Kekinian -->
+                    <article class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col hover:shadow-xl transition duration-300">
+                        <img src="https://inilahkuningan.com/wp-content/uploads/2025/04/INIArunika.jpg" alt="Arunika Kafe Kuningan" class="h-48 w-full object-cover"
+                            onerror="this.onerror=null;this.src='https://placehold.co/600x400/6b7280/ffffff?text=Kafe+Unik';">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <span class="text-xs font-semibold text-teal-600 mb-2">🏞️ Spot Foto Kekinian</span>
+                            <h4 class="text-xl font-bold mb-3">Arunika, Pilihan Terbaik di Kaki Ciremai</h4>
+                            <p class="text-gray-600 text-sm flex-grow">Rekomendasi tempat ngopi dan berswafoto yang lagi hits dan punya *view* memanjakan mata.</p>
+                            <div class="mt-4 pt-4 border-t border-gray-100 text-sm flex justify-between">
+                                <span class="text-gray-500">10 Nov 2025</span>
+                                <a href="#" class="text-teal-600 hover:text-teal-700 font-medium">Baca</a>
+                            </div>
+                        </div>
+                    </article>
+
+                </div>
+                <!-- Tombol Lihat Semua (Sekarang mengarah ke berita_kuningan.html) -->
+                <div class="text-center mt-10">
+                    <a href="berita_kuningan.html" class="inline-block bg-teal-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-teal-700 transition duration-300 transform hover:translate-y-[-2px]">
+                        Lihat Semua Artikel Kuningan
+                    </a>
+                </div>
+            </div>
+
+            <!-- Pernyataan Misi Singkat / CTA -->
+            <div class="bg-amber-500 p-8 rounded-xl text-center shadow-lg my-12">
+                <h3 class="text-2xl font-bold text-white mb-2">Misi Kami: Mempromosikan Potensi Kuningan</h3>
+                <p class="text-gray-900">Kami hadir untuk menjadi panduan utama Anda dalam menjelajahi setiap sudut kota dan kabupaten ini.</p>
+            </div>
+        </section>
+
+
+        <!-- -------------------------------------------------- -->
+        <!-- 2. KATEGORI UTAMA (KATEGORI CONTENT) -->
+        <!-- -------------------------------------------------- -->
+        <section id="kategori" class="section-padding bg-white rounded-xl shadow-inner">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-extrabold text-teal-700 mb-3">Kategori Utama Kuningan Kita</h2>
+                <p class="text-lg text-gray-600 max-w-4xl mx-auto">Temukan semua yang Anda cari tentang Kuningan, terbagi dalam lima topik utama yang menarik dan informatif.</p>
+            </div>
+
+            <!-- GRID KATEGORI -->
+            <div class="grid md:grid-cols-2 gap-8 lg:gap-12">
+
+                <!-- Kategori 1: Wisata & Rekreasi -->
+                <a href="#home" class="p-8 rounded-xl shadow-xl hover:shadow-2xl transition duration-300 transform hover:translate-y-[-2px] border-l-8 border-teal-500 flex items-start space-x-4 bg-gray-50">
+                    <p class="text-5xl pt-1">🏞️</p>
+                    <div>
+                        <h3 class="text-2xl font-bold text-teal-700 mb-2">Wisata & Rekreasi</h3>
+                        <p class="text-gray-600">Eksplorasi destinasi alam Gunung Ciremai, situs bersejarah Linggarjati, hingga kafe kekinian. Semua panduan perjalanan ada di sini.</p>
+                        <span class="text-sm font-semibold text-teal-500 mt-2 inline-block">Lihat 120+ Artikel →</span>
+                    </div>
+                </a>
+
+                <!-- Kategori 2: Kuliner & Makanan Lokal -->
+                <a href="#home" class="p-8 rounded-xl shadow-xl hover:shadow-2xl transition duration-300 transform hover:translate-y-[-2px] border-l-8 border-amber-500 flex items-start space-x-4 bg-gray-50">
+                    <p class="text-5xl pt-1">🍽️</p>
+                    <div>
+                        <h3 class="text-2xl font-bold text-amber-700 mb-2">Kuliner & Makanan Lokal</h3>
+                        <p class="text-gray-600">Ulasan mendalam tentang Nasi Kasreng, Hucap, hingga Peuyeum Ketan. Temukan warung legendaris dan rekomendasi oleh-oleh terbaik.</p>
+                        <span class="text-sm font-semibold text-amber-500 mt-2 inline-block">Lihat 85+ Artikel →</span>
+                    </div>
+                </a>
+
+                <!-- Kategori 3: Berita Lokal & Peristiwa -->
+                <a href="berita_kuningan.html" class="p-8 rounded-xl shadow-xl hover:shadow-2xl transition duration-300 transform hover:translate-y-[-2px] border-l-8 border-blue-500 flex items-start space-x-4 bg-gray-50">
+                    <p class="text-5xl pt-1">📰</p>
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-700 mb-2">Berita Lokal & Peristiwa</h3>
+                        <p class="text-gray-600">Informasi tercepat mengenai pengumuman pemerintah daerah, isu sosial terkini, dan proyek pembangunan kota Kuningan.</p>
+                        <span class="text-sm font-semibold text-blue-500 mt-2 inline-block">Lihat 60+ Artikel →</span>
+                    </div>
+                </a>
+
+                <!-- Kategori 4: Acara & Festival -->
+                <a href="#home" class="p-8 rounded-xl shadow-xl hover:shadow-2xl transition duration-300 transform hover:translate-y-[-2px] border-l-8 border-purple-500 flex items-start space-x-4 bg-gray-50">
+                    <p class="text-5xl pt-1">🗓️</p>
+                    <div>
+                        <h3 class="text-2xl font-bold text-purple-700 mb-2">Acara & Festival</h3>
+                        <p class="text-gray-600">Kalender acara tahunan Kuningan, mulai dari Festival Ciremai, tradisi budaya, hingga pameran dan workshop edukasi.</p>
+                        <span class="text-sm font-semibold text-purple-500 mt-2 inline-block">Lihat 30+ Acara →</span>
+                    </div>
+                </a>
+
+                <!-- Kategori 5: Komunitas & Profil Lokal -->
+                <a href="#home" class="p-8 rounded-xl shadow-xl hover:shadow-2xl transition duration-300 transform hover:translate-y-[-2px] border-l-8 border-red-500 flex items-start space-x-4 bg-gray-50">
+                    <p class="text-5xl pt-1">🤝</p>
+                    <div>
+                        <h3 class="text-2xl font-bold text-red-700 mb-2">Komunitas & Profil Lokal</h3>
+                        <p class="text-gray-600">Wawancara dengan tokoh inspiratif, liputan UMKM unggulan, serta artikel mendalam tentang sejarah dan legenda lokal Kuningan.</p>
+                        <span class="text-sm font-semibold text-red-500 mt-2 inline-block">Lihat 45+ Profil →</span>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- -------------------------------------------------- -->
+        <!-- 3. TENTANG KAMI (ABOUT CONTENT) -->
+        <!-- -------------------------------------------------- -->
+        <section id="tentang" class="section-padding">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-extrabold text-teal-700 mb-3">Tentang Kuningan Kita</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Kami adalah portal informasi independen yang berdedikasi untuk mempromosikan seluruh potensi Kabupaten Kuningan.</p>
+            </div>
+
+            <!-- VISI DAN MISI -->
+            <div class="grid md:grid-cols-2 gap-10 mb-16">
+                
+                <div class="bg-white p-8 rounded-xl shadow-2xl border-t-4 border-amber-500">
+                    <h3 class="text-3xl font-bold text-amber-600 mb-4">Visi Kami</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        Menjadi sumber informasi digital terdepan dan terpercaya mengenai Kuningan, Jawa Barat, yang dapat diakses oleh masyarakat lokal maupun wisatawan global, sehingga Kuningan dikenal sebagai destinasi wisata dan investasi yang unggul.
+                    </p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-2xl border-t-4 border-teal-500">
+                    <h3 class="text-3xl font-bold text-teal-600 mb-4">Misi Kami</h3>
+                    <ul class="space-y-3 text-gray-700 list-disc list-inside">
+                        <li>Mengulas destinasi wisata alam, budaya, dan sejarah Kuningan secara mendalam.</li>
+                        <li>Mengarsipkan dan mempromosikan kekayaan kuliner khas lokal dan UMKM.</li>
+                        <li>Menyediakan liputan berita dan kalender acara terkini.</li>
+                        <li>Membangun platform interaktif yang menghubungkan komunitas lokal.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- CERITA KAMI -->
+            <div class="mb-16 bg-gray-100 p-10 rounded-xl shadow-inner">
+                <h3 class="text-3xl font-bold text-teal-700 mb-6 border-b-2 pb-2">Cerita di Balik Kuningan Kita</h3>
+                <div class="text-gray-700 space-y-4">
+                    <p>
+                        Kuningan Kita lahir dari kecintaan sekelompok anak muda terhadap keindahan dan potensi yang dimiliki Kuningan. Kami percaya bahwa di balik Gunung Ciremai yang menjulang, tersimpan ribuan kisah, resep kuliner otentik, dan semangat komunitas yang layak dibagikan ke dunia.
+                    </p>
+                    <p>
+                        Blog ini bukan sekadar direktori, melainkan jurnal digital yang merekam perkembangan kota, mengabadikan warisan budaya, dan merayakan setiap prestasi warganya. Setiap artikel ditulis dengan hati, memastikan keakuratan informasi dan nuansa lokal yang autentik.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- TIM PENGEMBANG (Diubah menjadi satu profil) -->
+            <div class="mb-16">
+                <h3 class="text-3xl font-bold text-center text-teal-700 mb-8">Pengembang Website</h3>
+                <div class="grid sm:grid-cols-1 md:grid-cols-3 gap-8 text-center justify-center">
+                    
+                    <!-- Mohamad Akfry Profile -->
+                    <div class="bg-white p-6 rounded-xl shadow-2xl hover:shadow-xl transition duration-300 md:col-start-2">
+                        <img src="https://placehold.co/100x100/14b8a6/ffffff?text=MA" alt="Profil Pengembang Mohamad Akfry" class="rounded-full mx-auto mb-4 border-4 border-teal-500">
+                        <h4 class="text-2xl font-bold text-gray-900">Mohamad Akfry</h4>
+                        <p class="text-md text-teal-600 font-semibold">Pengembang & Pembuat Website</p>
+                        <p class="text-sm text-gray-500 mt-2">Berdedikasi dalam membangun dan memelihara portal informasi Kuningan Kita ini.</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- -------------------------------------------------- -->
+        <!-- 4. KONTAK (CONTACT CONTENT) -->
+        <!-- -------------------------------------------------- -->
+        <section id="kontak" class="section-padding bg-gray-100 rounded-xl shadow-inner">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-extrabold text-teal-700 mb-3">Hubungi Kami</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Kami senang mendengar dari Anda! Kirim pertanyaan, saran, atau usulan konten Kuningan Anda.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Kolom Kiri: Formulir Kontak -->
+                <div class="bg-white p-8 rounded-xl shadow-2xl">
+                    <h3 class="text-3xl font-bold text-amber-600 mb-6 border-b-2 pb-2">Kirim Pesan Langsung (Untuk Redaksi Blog)</h3>
+                    
+                    <!-- Form Mock-up: Diubah untuk mengirim via WhatsApp -->
+                    <form id="redaksiForm" onsubmit="sendMessage(event)" class="space-y-4">
+                        <div>
+                            <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                            <input type="text" id="nama" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500" placeholder="Contoh: Risa Saraswati" required>
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Aktif</label>
+                            <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500" placeholder="emailanda@contoh.com" required>
+                        </div>
+                        <div>
+                            <label for="subjek" class="block text-sm font-medium text-gray-700 mb-1">Subjek</label>
+                            <select id="subjek" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500" required>
+                                <option>Pilih Subjek</option>
+                                <option>Saran Destinasi Wisata</option>
+                                <option>Kerja Sama/Media Partner</option>
+                                <option>Laporkan Kesalahan Informasi</option>
+                                <option>Lainnya</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="pesan" class="block text-sm font-medium text-gray-700 mb-1">Pesan Anda</label>
+                            <textarea id="pesan" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500" placeholder="Tuliskan pesan Anda di sini..." required></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-teal-600 text-white font-semibold py-3 rounded-xl shadow-md hover:bg-teal-700 transition duration-300 transform hover:translate-y-[-1px]">
+                            Kirim Pesan (via WhatsApp)
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Kolom Kanan: Detail Kontak Kuningan -->
+                <div class="space-y-6">
+                    
+                    <!-- Kontak Pemerintah Kabupaten Kuningan -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-teal-500">
+                        <h3 class="text-2xl font-bold text-teal-700 mb-3">Kontak Pelayanan Publik (Pemkab Kuningan)</h3>
+                        <div class="space-y-3">
+                            <!-- Mockup nomor pemerintah -->
+                            <p class="flex items-center text-gray-700"><span class="mr-3 text-amber-500">📞</span> Hotline Resmi: <a href="tel:+622328881234" class="hover:underline ml-1 font-semibold text-lg text-teal-600">(0232) 888-1234</a> (Pusat Informasi)</p>
+                            <p class="flex items-center text-gray-700"><span class="mr-3 text-amber-500">✉️</span> Email Pemerintahan: <a href="mailto:dinkominfo@kuningankab.go.id" class="hover:underline ml-1">dinkominfo@kuningankab.go.id</a></p>
+                            <p class="flex items-center text-gray-700"><span class="mr-3 text-amber-500">📍</span> Kantor Pusat: Jl. Siliwangi No. 99, Pusat Pemerintahan Kabupaten Kuningan.</p>
+                            <p class="text-xs italic text-gray-500 pt-2 border-t border-gray-100">Catatan: Nomor di atas adalah kontak mock-up untuk ilustrasi layanan publik.</p>
+                        </div>
+                    </div>
+
+                    <!-- Kontak Editorial Blog -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-amber-500">
+                        <h3 class="text-2xl font-bold text-amber-600 mb-3">Kontak Editorial Kuningan Kita</h3>
+                        <div class="space-y-3">
+                            <!-- ALAMAT EMAIL BARU -->
+                            <p class="flex items-center text-gray-700"><span class="mr-3 text-red-500">✉️</span> Email Redaksi: <a href="mailto:mohamadakfry59@gmail.com" class="hover:underline ml-1">mohamadakfry59@gmail.com</a></p>
+                            <!-- Tautan WhatsApp langsung -->
+                            <p class="flex items-center text-gray-700"><span class="mr-3 text-red-500">💬</span> WhatsApp/Kerja Sama: <a href="https://wa.me/6283167602196" target="_blank" class="hover:underline ml-1 font-semibold text-teal-600">083167602196</a></p>
+                            <p class="text-gray-500 text-sm mt-2 pt-2 border-t border-gray-100">Alamat Redaksi (Mock): Jl. Raya Siliwangi No. 45, Kel. Awirarangan.</p>
+                        </div>
+                    </div>
+
+                    <!-- Media Sosial -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-gray-500">
+                        <h3 class="text-2xl font-bold text-gray-700 mb-3">Media Sosial</h3>
+                        <div class="flex space-x-4 text-2xl mt-4">
+                            <a href="#" class="text-gray-500 hover:text-teal-600 transition duration-150">FB</a>
+                            <a href="#" class="text-gray-500 hover:text-teal-600 transition duration-150">IG</a>
+                            <a href="#" class="text-gray-500 hover:text-teal-600 transition duration-150">X</a>
+                            <a href="#" class="text-gray-500 hover:text-teal-600 transition duration-150">YT</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-900 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <!-- Kolom 1: Logo & Deskripsi -->
+                <div>
+                    <h5 class="text-xl font-bold text-teal-400 mb-4">Kuningan Kita</h5>
+                    <p class="text-sm text-gray-400">Panduan lengkap destinasi, kuliner, dan berita Kuningan, Jawa Barat.</p>
+                </div>
+
+                <!-- Kolom 2: Navigasi Cepat -->
+                <div>
+                    <h5 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-1">Navigasi</h5>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="berita_kuningan.html" class="hover:text-teal-400">Berita Terkini</a></li>
+                        <li><a href="#kategori" class="hover:text-teal-400">Kategori Utama</a></li>
+                        <li><a href="#sorotan" class="hover:text-teal-400">Sorotan</a></li>
+                        <li><a href="#" class="hover:text-teal-400">Peta Situs</a></li>
+                    </ul>
+                </div>
+
+                <!-- Kolom 3: Halaman Pendukung -->
+                <div>
+                    <h5 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-1">Informasi</h5>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#tentang" class="hover:text-teal-400">Tentang Kami</a></li>
+                        <li><a href="#kontak" class="hover:text-teal-400">Kontak Kami</a></li>
+                        <li><a href="#" class="hover:text-teal-400">Kebijakan Privasi</a></li>
+                    </ul>
+                </div>
+
+                <!-- Kolom 4: Media Sosial (Placeholder) -->
+                <div>
+                    <h5 class="text-lg font-semibold mb-4 border-b border-gray-700 pb-1">Ikuti Kami</h5>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-teal-400 transition">FB</a>
+                        <a href="#" class="text-gray-400 hover:text-teal-400 transition">IG</a>
+                        <a href="#" class="text-gray-400 hover:text-teal-400 transition">X</a>
+                        <a href="#" class="text-gray-400 hover:text-teal-400 transition">YT</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center text-sm text-gray-400">
+                &copy; 2025 Kuningan Kita. Hak Cipta Dilindungi. Dibuat dengan cinta untuk Kuningan.
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Custom Alert/Message Box HTML -->
+    <div id="customAlertOverlay" class="alert-overlay">
+        <div id="customAlertBox" class="alert-box">
+            <div class="flex items-center space-x-3 mb-4">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.332 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <h4 class="text-xl font-bold text-gray-900">Peringatan!</h4>
+            </div>
+            <p id="alertMessage" class="text-gray-700 mb-6">Pesan peringatan default.</p>
+            <button onclick="closeCustomAlert()" class="w-full bg-teal-600 text-white font-semibold py-2 rounded-lg hover:bg-teal-700 transition">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        // --- LOGIC CAROUSEL HORIZONTAL SLIDING ---
+        const carouselImages = [
+            { src: 'https://inilahkuningan.com/wp-content/uploads/2025/04/INIArunika.jpg', alt: 'Arunika, Pemandangan Kafe di Kuningan' },
+            { src: 'https://assets.pikiran-rakyat.com/crop/63x84:1822x1163/1200x675/photo/2024/02/15/838621680.jpg', alt: 'Keindahan Alam Kuningan' },
+            { src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKv0v84jzh6YPdrBauO4SeHNpYF831pd1P8Q&s', alt: 'View dari Kaki Gunung Ciremai' },
+            { src: 'https://suaracirebon.com/wp-content/uploads/2023/09/waduk-darma.jpg', alt: 'Waduk Darma yang Mempesona' },
+            { src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJVYI-GngiCYspRIBu9IskZapgv5XQke-HYg&s', alt: 'Suasana Sejuk Pegunungan Kuningan' }
+        ];
+        let currentSlide = 0;
+        const carouselContainer = document.getElementById('imageCarousel');
+        const carouselTrack = document.getElementById('carouselTrack'); // Referensi ke elemen track
+        const captionElement = document.getElementById('imageCaption');
+
+        function createCarouselElements() {
+            carouselImages.forEach((image, index) => {
+                const imgElement = document.createElement('img');
+                imgElement.src = image.src;
+                imgElement.alt = image.alt;
+                imgElement.className = 'carousel-image'; // Menggunakan class untuk styling width/height
+                imgElement.onerror = function() {
+                    this.src = `https://placehold.co/800x400/ef4444/ffffff?text=ERROR+GAMBAR+${index + 1}`;
+                };
+                imgElement.setAttribute('data-index', index);
+                carouselTrack.appendChild(imgElement); // Append ke track
+            });
+        }
+
+        function showSlide(n) {
+            const slides = carouselTrack.children;
+            if (slides.length === 0) return;
+
+            // Hitung indeks slide yang baru
+            if (n >= slides.length) {
+                currentSlide = 0;
+            } else if (n < 0) {
+                currentSlide = slides.length - 1;
+            } else {
+                currentSlide = n;
+            }
+
+            // APLIKASIKAN TRANSLATE X UNTUK HORIZONTAL SLIDING
+            const offset = currentSlide * 100;
+            carouselTrack.style.transform = `translateX(-${offset}%)`;
+            
+            // Perbarui caption
+            captionElement.textContent = carouselImages[currentSlide].alt;
+        }
+
+        function changeSlide(n) {
+            showSlide(currentSlide + n);
+        }
+
+        // Inisialisasi Carousel
+        window.addEventListener('load', () => {
+            createCarouselElements();
+            showSlide(0);
+
+            // Tambahkan fitur autoplay (diaktifkan)
+            setInterval(() => changeSlide(1), 5000); 
+        });
+
+        // --- LOGIC CUSTOM ALERT ---
+        function showCustomAlert(message) {
+            const overlay = document.getElementById('customAlertOverlay');
+            document.getElementById('alertMessage').textContent = message;
+            overlay.classList.add('show');
+            overlay.style.display = 'flex';
+        }
+
+        function closeCustomAlert() {
+            const overlay = document.getElementById('customAlertOverlay');
+            overlay.classList.remove('show');
+            // Beri sedikit delay sebelum menyembunyikan display agar transisi berjalan
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+
+        // --- LOGIC WHATSAPP (sendMessage) ---
+        function sendMessage(event) {
+            event.preventDefault(); // Mencegah reload halaman
+
+            const nama = document.getElementById('nama').value;
+            const email = document.getElementById('email').value;
+            const subjek = document.getElementById('subjek').value;
+            const pesan = document.getElementById('pesan').value;
+
+            // Memastikan semua field terisi
+            if (!nama || !email || subjek === 'Pilih Subjek' || !pesan) {
+                // Mengganti alert() dengan custom message box
+                showCustomAlert('Mohon lengkapi semua field formulir sebelum mengirim pesan.');
+                return;
+            }
+
+            const phoneNumber = '6283167602196'; // Nomor WA tujuan (Indonesia: 62)
+            
+            // Membuat pesan WhatsApp yang terstruktur
+            let waMessage = `Halo Redaksi Kuningan Kita!%0A%0A`;
+            waMessage += `Saya ingin mengirim pesan terkait *${subjek}*.%0A%0A`;
+            waMessage += `*Detail Kontak*:%0A`;
+            waMessage += `Nama: ${nama}%0A`;
+            waMessage += `Email: ${email}%0A%0A`;
+            waMessage += `*Pesan*:%0A`;
+            waMessage += `${pesan}%0A%0A`;
+            waMessage += `_Pesan ini dikirim melalui formulir kontak website Kuningan Kita._`;
+
+            // Membuat tautan WhatsApp
+            const waLink = `https://wa.me/${phoneNumber}?text=${waMessage}`;
+
+            // Mengarahkan pengguna ke tautan WhatsApp
+            window.open(waLink, '_blank');
+        }
+    </script>
+</body>
+</html>
